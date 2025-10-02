@@ -92,7 +92,7 @@ const eslintConfig = defineConfig([
   },
   {
     ...testingLibraryPlugin.configs['flat/react'],
-    files: ['src/**/*.test.tsx'],
+    files: ['tests/**/*.test.tsx'],
   },
   jestDomPlugin.configs['flat/recommended'],
   eslintCompat.configs['flat/recommended'],
@@ -150,7 +150,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.test.tsx'],
+    files: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
     rules: {
       '@typescript-eslint/unbound-method': 'off',
       'compat/compat': 'off',
@@ -193,6 +193,15 @@ const eslintConfig = defineConfig([
         { avoidEscape: true, allowTemplateLiterals: false },
       ],
     },
+  },
+  {
+    ignores: [
+      '*.config.*',
+      'vitest.setup.ts',
+      'vitest.config.ts',
+      'eslint.config.*',
+      'next.config.*',
+    ],
   },
 ]);
 
