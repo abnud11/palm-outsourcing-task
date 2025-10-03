@@ -4,3 +4,4 @@ dayjs.extend(utc);
 
 // eslint-disable-next-line unicorn/prefer-export-from
 export default dayjs;
+const a = 2;
