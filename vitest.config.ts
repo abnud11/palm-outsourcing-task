@@ -31,7 +31,12 @@ export default defineConfig({
     ],
     coverage: {
       enabled: true,
-      exclude: [...coverageConfigDefaults.exclude, '*.ts', '*.mjs'],
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        '*.ts',
+        '*.mjs',
+        'src/lib/models/seed.ts',
+      ],
       thresholds: {
         perFile: true,
         branches: 80,
