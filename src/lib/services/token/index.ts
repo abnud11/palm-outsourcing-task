@@ -1,7 +1,7 @@
 'use server';
 
 import { Document, FilterQuery, FlattenMaps } from 'mongoose';
-import { Token, TokenModel } from '@/lib/models/token';
+import { Token, TokenModel, TokenStatus } from '@/lib/models/token';
 import dayjs from '@/lib/dayjs';
 import { connectToDatabase } from '@/lib/models/db';
 import { VisibleToken } from './types';
@@ -48,5 +48,30 @@ export async function getTokens(params: GetTokensParams) {
   return docs.map(
     (doc) =>
       doc.toJSON({ flattenObjectIds: true }) as FlattenMaps<VisibleToken>,
+  );
+}
+
+export async function renewToken(id: string) {
+  await connectToDatabase();
+  await TokenModel.updateOne(
+    { _id: id },
+    {
+      $set: {
+        expiryDate: dayjs().add(30, 'day').utc().toDate(),
+        status: TokenStatus.ACTIVE,
+      },
+    },
+  );
+}
+
+export async function revokeToken(id: string) {
+  await connectToDatabase();
+  await TokenModel.updateOne(
+    { _id: id },
+    {
+      $set: {
+        status: TokenStatus.REVOKED,
+      },
+    },
   );
 }

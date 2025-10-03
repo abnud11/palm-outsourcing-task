@@ -3,7 +3,7 @@ import {
   type VisibleToken,
   VisibleTokenStatus,
 } from '@/lib/services/token/types';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import dayjs from '@/lib/dayjs';
 import { clsx } from 'clsx';
 import { useState } from 'react';
@@ -15,6 +15,36 @@ interface TokensTableProps {
 export function TokensTable({ initialTokens }: TokensTableProps) {
   const [search, setSearch] = useState('');
   const [expiredOnly, setExpiredOnly] = useState(false);
+  const queryClient = useQueryClient();
+  const { mutateAsync: renewToken } = useMutation({
+    mutationKey: ['tokens'],
+    mutationFn: async (token: VisibleToken) => {
+      const response = await fetch(`/api/tokens/${token._id}/renew`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['tokens'] });
+    },
+  });
+
+  const { mutateAsync: revokeToken } = useMutation({
+    mutationKey: ['tokens'],
+    mutationFn: async (token: VisibleToken) => {
+      const response = await fetch(`/api/tokens/${token._id}/revoke`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['tokens'] });
+    },
+  });
   const { data: tokens } = useQuery({
     queryKey: ['tokens', search, expiredOnly],
     queryFn: async () => {
@@ -37,8 +67,15 @@ export function TokensTable({ initialTokens }: TokensTableProps) {
       return undefined;
     },
   });
+
   const handleSearchChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(ev.target.value);
+  };
+  const handleRenew = (token: VisibleToken) => async () => {
+    await renewToken(token);
+  };
+  const handleRevoke = (token: VisibleToken) => async () => {
+    await revokeToken(token);
   };
   return (
     <div className="flex flex-col gap-4">
@@ -68,6 +105,7 @@ export function TokensTable({ initialTokens }: TokensTableProps) {
             <th className="border-r-2 border-gray-400">Token</th>
             <th className="border-r-2 border-gray-400">Expiry Date</th>
             <th className="border-r-2 border-gray-400">Status</th>
+            <th className="border-r-2 border-gray-400">Actions</th>
           </tr>
         </thead>
         <tbody className="border-2 border-gray-400 text-center">
@@ -88,6 +126,27 @@ export function TokensTable({ initialTokens }: TokensTableProps) {
                 UTC
               </td>
               <td className="border-r-2 border-gray-400">{token.status}</td>
+              <td className="border-r-2 p-2 border-gray-400">
+                <button
+                  className={clsx(
+                    'w-full rounded-md text-white p-1 cursor-pointer',
+                    {
+                      'bg-red-500': token.status === VisibleTokenStatus.ACTIVE,
+                      'bg-blue-500': token.status !== VisibleTokenStatus.ACTIVE,
+                    },
+                  )}
+                  type="button"
+                  onClick={
+                    token.status === VisibleTokenStatus.ACTIVE
+                      ? handleRevoke(token)
+                      : handleRenew(token)
+                  }
+                >
+                  {token.status === VisibleTokenStatus.ACTIVE
+                    ? 'Revoke'
+                    : 'Renew'}
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
