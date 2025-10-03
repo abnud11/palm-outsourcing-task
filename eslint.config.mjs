@@ -63,6 +63,7 @@ const eslintConfig = defineConfig([
       'unicorn/catch-error-name': 'off',
       '@typescript-eslint/no-deprecated': 'error',
       'unicorn/no-useless-undefined': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
     },
   },
   stylistic.configs.recommended,
