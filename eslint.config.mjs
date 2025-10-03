@@ -32,6 +32,7 @@ const eslintConfig = defineConfig([
     rules: {
       ...vitest.configs.recommended.rules,
       'vitest/expect-expect': 'warn',
+      'vitest/prefer-called-exactly-once-with': 'off',
     },
     languageOptions: {
       globals: {
