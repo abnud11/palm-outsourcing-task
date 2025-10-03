@@ -8,7 +8,7 @@ export enum TokenStatus {
 export interface Token {
   service: string;
   token: string;
-  expiryDate: Date;
+  expiryDate: Date | string;
   status: TokenStatus;
 }
 

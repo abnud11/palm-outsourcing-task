@@ -84,6 +84,7 @@ export function TokensTable({ initialTokens }: TokensTableProps) {
         <input
           id="token-search"
           type="search"
+          name="service"
           value={search}
           onChange={handleSearchChange}
           className="border-2 border-gray-400 rounded-md p-1"
@@ -128,6 +129,7 @@ export function TokensTable({ initialTokens }: TokensTableProps) {
               <td className="border-r-2 border-gray-400">{token.status}</td>
               <td className="border-r-2 p-2 border-gray-400">
                 <button
+                  data-testid={token._id}
                   className={clsx(
                     'w-full rounded-md text-white p-1 cursor-pointer',
                     {

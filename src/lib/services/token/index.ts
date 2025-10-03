@@ -14,7 +14,7 @@ export async function getTokens(params: GetTokensParams) {
   await connectToDatabase();
   const query: FilterQuery<Token> = {};
   if (params.service) {
-    query.service = { $regex: params.service || '' };
+    query.service = { $regex: new RegExp(params.service, 'i') };
   }
   if (params.expired) {
     const now = dayjs().utc().toDate();
