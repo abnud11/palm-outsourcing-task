@@ -95,7 +95,16 @@ const eslintConfig = defineConfig([
     files: ['tests/**/*.test.tsx'],
   },
   jestDomPlugin.configs['flat/recommended'],
-  eslintCompat.configs['flat/recommended'],
+  {
+    ...eslintCompat.configs['flat/recommended'],
+    ignores: [
+      'tests/**/*.test.ts',
+      'tests/**/*.test.tsx',
+      'src/lib/actions/**/*.ts',
+      'src/app/**/route.ts',
+      'src/app/**/page.tsx',
+    ],
+  },
   {
     plugins: {
       '@next/next': nextPlugin,
@@ -112,6 +121,7 @@ const eslintConfig = defineConfig([
       'src/app/**/error.tsx',
       'src/app/**/loading.tsx',
       'src/app/**/route.ts',
+      'src/lib/models/seed.ts',
     ],
     rules: {
       'import/no-unused-modules': [
@@ -178,7 +188,12 @@ const eslintConfig = defineConfig([
       '.next/**',
       'out/**',
       'build/**',
-      'next-env.d.ts',
+      '**/*.d.ts',
+      '*.config.*',
+      'vitest.setup.ts',
+      'vitest.config.ts',
+      'eslint.config.*',
+      'next.config.*',
     ],
   },
   eslintPluginPrettierRecommended,
@@ -193,15 +208,6 @@ const eslintConfig = defineConfig([
         { avoidEscape: true, allowTemplateLiterals: false },
       ],
     },
-  },
-  {
-    ignores: [
-      '*.config.*',
-      'vitest.setup.ts',
-      'vitest.config.ts',
-      'eslint.config.*',
-      'next.config.*',
-    ],
   },
 ]);
 

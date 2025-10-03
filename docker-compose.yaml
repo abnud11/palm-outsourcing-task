@@ -1,0 +1,42 @@
+services:
+  frontend:
+    build:
+      context: .
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/test
+    depends_on:
+      - mongodb
+    ports:
+      - '3000:3000'
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+        - action: sync+restart
+          path: ./next.config.ts
+          target: /app/next.config.ts
+        - action: sync+restart
+          path: ./postcss.config.mjs
+          target: /app/postcss.config.mjs
+        - action: sync+restart
+          path: tsconfig.json
+          target: /app/tsconfig.json
+  mongodb:
+    image: mongodb/mongodb-community-server:8.0.13-ubuntu2204
+    command: ['--replSet', 'rs1', '--bind_ip_all', '--port', '27017']
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata:/data/db
+    healthcheck:
+      test: |
+        test $$(mongosh --quiet --eval "try { rs.initiate({ _id: 'rs1', members: [{ _id: 0, host: 'mongodb' }] }).ok } catch (_) { rs.status().ok }") -eq 1
+      start_period: 5s
+
+volumes:
+  dbdata:
